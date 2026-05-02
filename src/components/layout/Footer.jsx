@@ -1,10 +1,10 @@
 function Footer() {
   const navItems = [
-    ['Solución', '#solucion'],
-    ['Beneficios', '#beneficios'],
-    ['Seguridad', '#seguridad'],
-    ['Planes', '#planes'],
-    ['Contacto', '#contacto'],
+    ['Solución', '/solucion'],
+    ['Beneficios', '/beneficios'],
+    ['Seguridad', '/seguridad'],
+    ['Planes', '/planes'],
+    ['Contacto', '/contacto'],
   ]
 
   return (

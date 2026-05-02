@@ -27,7 +27,7 @@ function HeroSection() {
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <a
-              href="#contacto"
+              href="/contacto"
               className="rounded-xl bg-[#7c1cff] px-6 py-3 text-center text-sm font-bold text-white transition hover:bg-[#6414d9]"
             >
               Solicitar presentación

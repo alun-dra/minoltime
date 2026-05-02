@@ -18,7 +18,7 @@ function Header() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
         
         {/* LOGO */}
-        <a href="#inicio" className="flex items-center gap-3">
+        <a href="/" className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center bg-[#7c1cff] text-sm font-black text-white">
             MT
           </div>
