@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
+import { Turnstile } from '@marsidev/react-turnstile'
 import {
   Building2,
   Mail,
@@ -17,6 +18,8 @@ function Contacto() {
   const pageDescription =
     'Contacta a MinolTime para agendar una demo del sistema de control de asistencia para empresas con QR, código de acceso y tarjetas.'
 
+  const turnstileRef = useRef(null)
+
   const [form, setForm] = useState({
     name: '',
     company: '',
@@ -24,7 +27,10 @@ function Contacto() {
     phone: '',
     workers: '',
     message: '',
+    website: '',
   })
+
+  const [turnstileToken, setTurnstileToken] = useState('')
 
   const [status, setStatus] = useState({
     loading: false,
@@ -39,6 +45,11 @@ function Contacto() {
       ...current,
       [name]: value,
     }))
+  }
+
+  const resetTurnstile = () => {
+    setTurnstileToken('')
+    turnstileRef.current?.reset()
   }
 
   const handleSubmit = async (event) => {
@@ -57,12 +68,19 @@ function Contacto() {
         throw new Error('Falta configurar VITE_API_URL')
       }
 
+      if (!turnstileToken) {
+        throw new Error('Debes completar la verificación de seguridad')
+      }
+
       const response = await fetch(`${apiUrl}/api/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          turnstileToken,
+        }),
       })
 
       const data = await response.json().catch(() => null)
@@ -78,7 +96,10 @@ function Contacto() {
         phone: '',
         workers: '',
         message: '',
+        website: '',
       })
+
+      resetTurnstile()
 
       setStatus({
         loading: false,
@@ -86,10 +107,13 @@ function Contacto() {
         error: '',
       })
     } catch (error) {
+      resetTurnstile()
+
       setStatus({
         loading: false,
         success: false,
         error:
+          error.message ||
           'No pudimos enviar el mensaje. Intenta nuevamente o contáctanos por correo.',
       })
     }
@@ -204,6 +228,16 @@ function Contacto() {
               onSubmit={handleSubmit}
               className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8 lg:p-10"
             >
+              <input
+                type="text"
+                name="website"
+                value={form.website}
+                onChange={handleChange}
+                tabIndex="-1"
+                autoComplete="off"
+                className="hidden"
+              />
+
               <div className="grid gap-5 md:grid-cols-2">
                 <label className="block">
                   <span className="text-sm font-bold text-[#050917]">
@@ -312,6 +346,20 @@ function Contacto() {
                 />
               </label>
 
+              <div className="mt-6">
+                <Turnstile
+                  ref={turnstileRef}
+                  siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+                  options={{
+                    theme: 'light',
+                    size: 'flexible',
+                  }}
+                  onSuccess={(token) => setTurnstileToken(token)}
+                  onExpire={() => setTurnstileToken('')}
+                  onError={() => setTurnstileToken('')}
+                />
+              </div>
+
               {status.error && (
                 <p className="mt-5 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
                   {status.error}
@@ -326,7 +374,7 @@ function Contacto() {
 
               <button
                 type="submit"
-                disabled={status.loading}
+                disabled={status.loading || !turnstileToken}
                 className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#7c1cff] px-7 py-4 text-sm font-black text-white transition hover:bg-[#6414d9] disabled:cursor-not-allowed disabled:opacity-70"
               >
                 <Send className="h-5 w-5" />
