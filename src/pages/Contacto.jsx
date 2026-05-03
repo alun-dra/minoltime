@@ -63,6 +63,7 @@ function Contacto() {
 
     try {
       const apiUrl = import.meta.env.VITE_API_URL?.replace(/\/$/, '')
+      console.log('TURNSTILE KEY:', import.meta.env.VITE_TURNSTILE_SITE_KEY)
 
       if (!apiUrl) {
         throw new Error('Falta configurar VITE_API_URL')
@@ -350,6 +351,7 @@ function Contacto() {
                 <Turnstile
                   ref={turnstileRef}
                   siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+                  
                   options={{
                     theme: 'light',
                     size: 'flexible',
