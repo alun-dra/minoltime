@@ -34,6 +34,7 @@ function Contacto() {
 
   const handleChange = (event) => {
     const { name, value } = event.target
+
     setForm((current) => ({
       ...current,
       [name]: value,
@@ -50,7 +51,7 @@ function Contacto() {
     })
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL
+      const apiUrl = import.meta.env.VITE_API_URL?.replace(/\/$/, '')
 
       if (!apiUrl) {
         throw new Error('Falta configurar VITE_API_URL')
@@ -64,8 +65,10 @@ function Contacto() {
         body: JSON.stringify(form),
       })
 
+      const data = await response.json().catch(() => null)
+
       if (!response.ok) {
-        throw new Error('No se pudo enviar el mensaje')
+        throw new Error(data?.message || 'No se pudo enviar el mensaje')
       }
 
       setForm({
@@ -87,7 +90,7 @@ function Contacto() {
         loading: false,
         success: false,
         error:
-          'No pudimos enviar el mensaje. Intenta nuevamente o revisa la configuración del servidor.',
+          'No pudimos enviar el mensaje. Intenta nuevamente o contáctanos por correo.',
       })
     }
   }
@@ -179,8 +182,6 @@ function Contacto() {
               <h2 className="mt-4 text-4xl font-black text-[#050917]">
                 Completa tus datos y te contactamos.
               </h2>
-
-            
 
               <div className="mt-8 grid gap-4">
                 {[
